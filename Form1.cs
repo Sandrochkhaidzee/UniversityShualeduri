@@ -6,6 +6,7 @@ namespace WinFormsApp1
     public partial class Form1 : Form
     {
         private readonly OrderRepository _repository = new OrderRepository();
+        private DataSet _ordersDataSet;
 
         public Form1()
         {
@@ -22,6 +23,7 @@ namespace WinFormsApp1
             try
             {
                 DataSet ordersDataSet = await _repository.GetOrdersAsync();
+                _ordersDataSet = ordersDataSet;
 
                 DataTable orders = ordersDataSet.Tables["Orders"];
 
@@ -41,6 +43,40 @@ namespace WinFormsApp1
                 MessageBox.Show($"Error loading orders: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void FilterOrders(string searchTerm)
+        {
+
+            if (_ordersDataSet == null || _ordersDataSet.Tables["Orders"] == null)
+            {
+                return;
+            }
+
+            DataTable orders = _ordersDataSet.Tables["Orders"];
+
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                ordersDataGridView.DataSource = orders;
+            }
+            else
+            {
+                var filteredOrders = from row in orders.AsEnumerable()
+                                     where row.Field<string>("OrderName").Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                           row.Field<string>("CustomerName").Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                           row.Field<int>("Quantity").ToString().Contains(searchTerm)
+                                     select row;
+
+                if (!filteredOrders.Any())
+                {
+                    ordersDataGridView.DataSource = new DataTable();
+                    return;
+                }
+
+                DataTable filteredDataTable = filteredOrders.CopyToDataTable();
+                ordersDataGridView.DataSource = filteredDataTable;
+            }
+        }
+
 
         private void OrderComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -143,6 +179,12 @@ namespace WinFormsApp1
             bool success = await _repository.DeleteOrderAsync(orderId);
             MessageBox.Show(success ? "Order deleted!" : "Delete failed.");
             await LoadOrdersAsync();
+        }
+
+        private void SearchBox_TextChanged(object sender, EventArgs e)
+        {
+            string searchTerm = SearchBox.Text.Trim();
+            FilterOrders(searchTerm);
         }
     }
 }

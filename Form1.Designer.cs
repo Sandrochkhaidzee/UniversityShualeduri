@@ -39,6 +39,9 @@
             DeleteOrderButton = new Button();
             label4 = new Label();
             ordersDataGridView = new DataGridView();
+            SearchBox = new TextBox();
+            label5 = new Label();
+            sqlCommandBuilder1 = new Microsoft.Data.SqlClient.SqlCommandBuilder();
             ((System.ComponentModel.ISupportInitialize)ordersDataGridView).BeginInit();
             SuspendLayout();
             // 
@@ -145,11 +148,30 @@
             ordersDataGridView.Size = new Size(399, 172);
             ordersDataGridView.TabIndex = 10;
             // 
+            // SearchBox
+            // 
+            SearchBox.Location = new Point(177, 220);
+            SearchBox.Name = "SearchBox";
+            SearchBox.Size = new Size(100, 23);
+            SearchBox.TabIndex = 11;
+            SearchBox.TextChanged += SearchBox_TextChanged;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(126, 225);
+            label5.Name = "label5";
+            label5.Size = new Size(45, 15);
+            label5.TabIndex = 12;
+            label5.Text = "Search:";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(423, 438);
+            Controls.Add(label5);
+            Controls.Add(SearchBox);
             Controls.Add(ordersDataGridView);
             Controls.Add(label4);
             Controls.Add(DeleteOrderButton);
@@ -182,5 +204,8 @@
         private Button DeleteOrderButton;
         private Label label4;
         private DataGridView ordersDataGridView;
+        private TextBox SearchBox;
+        private Label label5;
+        private Microsoft.Data.SqlClient.SqlCommandBuilder sqlCommandBuilder1;
     }
 }
